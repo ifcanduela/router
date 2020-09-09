@@ -1,0 +1,24 @@
+{
+    "name": "ifcanduela/router",
+    "description": "A routing component wrapping FastRoute",
+    "type": "library",
+    "require": {
+        "nikic/fast-route": "^1.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.5",
+        "vimeo/psalm": "^3.15"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Igor F. Canduela",
+            "email": "ifcanduela@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ifcanduela\\router\\": "src"
+        }
+    }
+}
