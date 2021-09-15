@@ -34,6 +34,9 @@ class Router extends Group
     {
         $dispatcher = $this->getDispatcher();
 
+        # Make sure the path starts with a slash and doesn't end with one, unless it's the root path
+        $pathInfo = "/" . trim($pathInfo, "/");
+
         # Find the matched route
         /** @var array{int, Route, array} */
         $matchedRoute = $dispatcher->dispatch(strtoupper($httpMethod), $pathInfo);
