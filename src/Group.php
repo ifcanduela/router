@@ -126,6 +126,21 @@ class Group implements Routable
     }
 
     /**
+     * Add routes from a group or router in a sub-route.
+     *
+     * @param string $prefix
+     * @param Group $router
+     * @return Group
+     */
+    public function mount(string $prefix, Group $router): Group
+    {
+        $router->prefix($prefix);
+        $this->routes[] = $router;
+
+        return $this;
+    }
+
+    /**
      * Set a handler for routes without one.
      *
      * @param string|callable $handler

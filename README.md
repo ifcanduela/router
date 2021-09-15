@@ -1,6 +1,6 @@
 # Router
 
-PHP router wrapping `nikic/fast-route`, with support for nested route 
+PHP router wrapping `nikic/fast-route`, with support for nested route
 groups, default parameters and a few other extra features.
 
 ## Installation
@@ -22,7 +22,7 @@ $router->get("/")->to("my_controller");
 
 ## Loading routes from a file
 
-Loading routes from a file is the preferred method to initialise a router. Create a 
+Loading routes from a file is the preferred method to initialise a router. Create a
 file like this, for example `routes.php`:
 
 ```php
@@ -35,6 +35,10 @@ $r->get("/")->to("home");
 $r->group("/admin", function (ifcanduela\router\Group $g) {
     $g->get("/dashboard")->to("admin@dashboard");
 });
+
+// `$this` can also be used
+
+$this->post("/save")->to("admin@save");
 ```
 
 And load the file like this:
@@ -44,14 +48,18 @@ $router = new ifcanduela\router\Router();
 $router->loadFile("routes.php", "r");
 ```
 
+The second argument to `loadRoute()` defines the name of the router in the loaded file; the default is simply
+`router`. Additionally, the `$this` metavariable is always available in the loaded file and refers to the
+calling Group or Router.
+
 Files can be loaded from nested groups also:
 
 ```php
 $router->group("/admin", function (ifcanduela\router\Group $g) {
     $g->loadFile("admin-routes.php");
-    
+
     $g->group("/settings", function (ifcanduela\router\Group $g) {
-        $g->loadFile("admin-settings-routes.php");    
+        $g->loadFile("admin-settings-routes.php");
     });
 });
 ```
@@ -70,17 +78,20 @@ $group->post("/login")->to("login_submit");
 Behind the scenes, those methods call the static constructors in the Route class:
 
 ```php
-Route::from("/home")->to("home_controller");
-Route::get("/login")->to("login_form");
-Route::post("/login")->to("login_submit");
+$group = new Group();
+$group->routes([
+    Route::from("/home")->to("home_controller"),
+    Route::get("/login")->to("login_form"),
+    Route::post("/login")->to("login_submit"),
+]);
 ```
 
 The `get`, `post`, `put` and `delete` methods create routes that only match requests
-with the same HTTP method. The `from` method allows `GET` and `POST` by default, but 
+with the same HTTP method. The `from` method allows `GET` and `POST` by default, but
 the `Group::from` method accepts more string arguments with the HTTP methods to
 allow.
 
-Additionally, it's possible to call the `methods` method on a route to override its 
+Additionally, it's possible to call the `methods` method on a route to override its
 allowed methods:
 
 ```php
@@ -89,8 +100,8 @@ Route::from("/create-user")->to("api@createUser")->methods(["PATCH"]);
 ```
 
 Routes follow the syntax defined by [`nikic/fast-route`](https://github.com/nikic/FastRoute),
-so you can add parameters using curly braces and optional parameters using square brackets. 
-It's also possible to add default values for optional parameters:
+so you can add parameters using curly braces and wrap segments in square brackets to make them
+optional. It's also possible to add default values for optional parameters:
 
 ```php
 Route::from("/projects/{id}[/{version}]")
@@ -101,7 +112,7 @@ Route::from("/projects/{id}[/{version}]")
 ## Route groups
 
 When more than one route share a prefix or metadata, you can put them together inside a group.
-There are several ways to define groups, but all of them have the same result. First, the 
+There are several ways to define groups, but all of them have the same result. First, the
 generic way, in which the group is treated as a router:
 
 ```php
@@ -124,7 +135,7 @@ $router->group("/admin", function ($adminGroup) {
 ## Resolving the route
 
 The router will need a path and a HTTP method to resolve a route. If no matching route is found,
-an exception is thrown. 
+an exception is thrown.
 
 ```php
 $request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
@@ -190,7 +201,7 @@ $router->before(StartSession::class);
 $router->after(ConvertToResponse::class, SendResponse::class);
 ```
 
-Once the route is resolved, all applicable tags can be accessed using `$route->getBefore()` 
+Once the route is resolved, all applicable tags can be accessed using `$route->getBefore()`
 and `$route->getAfter()`.
 
 ## License

@@ -133,4 +133,23 @@ class RouterTest extends TestCase
         $this->assertInstanceOf(Route::class, $route);
         $this->assertEquals(["a", "b", "c"], $route->getParam("rest"));
     }
+
+    public function testMountRouter()
+    {
+        $r = new Router();
+        $r->get("/{slug}");
+
+        $s = new Router();
+        $s->get("/{slug}");
+
+        $r->mount("/admin", $s);
+
+        $route = $r->resolve("/admin/sub-route", "GET");
+        $this->assertInstanceOf(Route::class, $route);
+        $this->assertEquals("sub-route", $route->getParam("slug"));
+
+        $route = $r->resolve("/main-route", "GET");
+        $this->assertInstanceOf(Route::class, $route);
+        $this->assertEquals("main-route", $route->getParam("slug"));
+    }
 }
